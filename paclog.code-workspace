@@ -1,0 +1,160 @@
+{
+  // Place this file in the root of the paclog Mix project
+  // (next to mix.exs) and open it with: code paclog.code-workspace
+  "folders": [
+    {
+      "name": "paclog",
+      "path": "."
+    }
+  ],
+
+  "settings": {
+    // Elixir formatting
+    "[elixir]": {
+      "editor.defaultFormatter": "JakeBecker.elixir-ls",
+      "editor.formatOnSave": true,
+      "editor.tabSize": 2,
+      "editor.insertSpaces": true,
+      "editor.rulers": [98]
+    },
+    "[eex]": {
+      "editor.tabSize": 2
+    },
+
+    // ElixirLS
+    "elixirLS.dialyzerEnabled": true,
+    "elixirLS.fetchDeps": false,
+    "elixirLS.suggestSpecs": true,
+    "elixirLS.signatureAfterComplete": true,
+
+    // Hide build artifacts
+    "files.exclude": {
+      "**/_build": true,
+      "**/deps": true,
+      "**/.elixir_ls": true,
+      "**/paclog": false
+    },
+    "search.exclude": {
+      "**/_build": true,
+      "**/deps": true,
+      "**/.elixir_ls": true
+    },
+    "files.watcherExclude": {
+      "**/_build/**": true,
+      "**/deps/**": true,
+      "**/.elixir_ls/**": true
+    },
+
+    // Treat sample pacman logs in test/fixtures as log files
+    "files.associations": {
+      "*.log": "log"
+    },
+
+    "files.trimTrailingWhitespace": true,
+    "files.insertFinalNewline": true
+  },
+
+  "tasks": {
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "mix: deps.get",
+        "type": "shell",
+        "command": "mix deps.get",
+        "problemMatcher": []
+      },
+      {
+        "label": "mix: compile",
+        "type": "shell",
+        "command": "mix compile --warnings-as-errors",
+        "group": { "kind": "build", "isDefault": true },
+        "problemMatcher": ["$mixCompileError", "$mixCompileWarning"]
+      },
+      {
+        "label": "mix: test",
+        "type": "shell",
+        "command": "mix test",
+        "group": { "kind": "test", "isDefault": true },
+        "problemMatcher": ["$mixCompileError", "$mixTestFailure"]
+      },
+      {
+        "label": "mix: test (current file)",
+        "type": "shell",
+        "command": "mix test ${relativeFile}",
+        "group": "test",
+        "problemMatcher": ["$mixCompileError", "$mixTestFailure"]
+      },
+      {
+        "label": "mix: format",
+        "type": "shell",
+        "command": "mix format",
+        "problemMatcher": []
+      },
+      {
+        "label": "mix: escript.build",
+        "type": "shell",
+        "command": "mix escript.build",
+        "problemMatcher": ["$mixCompileError"]
+      },
+      {
+        "label": "paclog: history (prompt)",
+        "type": "shell",
+        "command": "./paclog history ${input:package}",
+        "dependsOn": "mix: escript.build",
+        "problemMatcher": []
+      },
+      {
+        "label": "paclog: since (prompt)",
+        "type": "shell",
+        "command": "./paclog since ${input:date}",
+        "dependsOn": "mix: escript.build",
+        "problemMatcher": []
+      }
+    ],
+    "inputs": [
+      {
+        "id": "package",
+        "type": "promptString",
+        "description": "Package name",
+        "default": "linux"
+      },
+      {
+        "id": "date",
+        "type": "promptString",
+        "description": "Start date (YYYY-MM-DD)",
+        "default": "2026-10-01"
+      }
+    ]
+  },
+
+  "launch": {
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "Debug: mix test",
+        "type": "mix_task",
+        "request": "launch",
+        "task": "test",
+        "taskArgs": ["--trace"],
+        "projectDir": "${workspaceFolder}",
+        "startApps": true,
+        "requireFiles": ["test/**/test_helper.exs", "test/**/*_test.exs"]
+      },
+      {
+        "name": "Debug: paclog history linux",
+        "type": "mix_task",
+        "request": "launch",
+        "task": "run",
+        "taskArgs": ["-e", "Paclog.main([\"history\", \"linux\"])"],
+        "projectDir": "${workspaceFolder}"
+      }
+    ]
+  },
+
+  "extensions": {
+    "recommendations": [
+      "JakeBecker.elixir-ls",
+      "emilast.LogFileHighlighter"
+    ]
+  }
+}
