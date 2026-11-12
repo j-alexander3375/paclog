@@ -25,3 +25,6 @@ paclog-*.tar
 # Exclude personal pacman.log
 /test/fixtures/
 
+# Exclude binary and workspaces
+paclog
+paclog.code-workspace
